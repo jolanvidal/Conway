@@ -6,26 +6,34 @@ import numpy as np
 import math
 
 # GLOBAL VARIABLES
-
 colWidth = 30
 rowWidth = 30
 
 row = 30
 col = 30
-board = []
 
+# RUNNING
+isRunning = True
 
+# BOARD (ONLY USING BOARD)
+list_of_lists = [[0]*col]*row
+board = np.array(list_of_lists)
+
+# SCREEN SIZE
 width = 1000
 height = 900
 
+# COLORS
 black = (0,0,0)
 white = (255,255,255)
-red = (255,0,0)
+dark = (100,100,100)
+
+# FPS
+fps = 3
+
 
 # Pygame
 pg.init()
-
-fps = 60
 
 clock = pg.time.Clock()
 
@@ -33,55 +41,75 @@ screen = pg.display.set_mode((width, height))
 
 pg.display.set_caption('Game of life')
 
-def init_board():
-    array = []
-    for i in range(col):
-        array.append(False)
-    
-    for i in range(col):
-        board.append(array)    
-    
-
 def draw_grid():
     for i in range(row):
         pg.draw.line(screen, white, (0, i * row), (row * row, i * col), 1)
-        pg.draw.line(screen, red, (i * col, 0), (i * row,col * col), 1)
+        pg.draw.line(screen, white, (i * col, 0), (i * row,col * col), 1)
+
+def draw_cells():
+    for x in range(col):
+        for y in range(row):
+            if (board[x,y] == 1):
+                pg.draw.rect(screen, white, (x * col, y * row, colWidth, rowWidth))      
+                
+def draw_button():
+    pg.draw.rect(screen, dark, (925, 100, 50, 20))
         
-    for i in range(col):
-        for j in range(row):
-            if (board[i][j] == True):
-                pg.draw.rect(screen, white, (i, j, colWidth, rowWidth))
-        
-        
+def init_board():
+    screen.fill(black)
+    draw_grid()    
+    draw_cells()
+    draw_button()
+    pg.display.update()
 
 def render():
     screen.fill(black)
     draw_grid()    
-    
+    draw_cells()
     pg.display.update()
     
-def click():
+def click():     
     mX,mY = pg.mouse.get_pos()
+    print("CLICK", mX, mY)
+    if (mX < colWidth * col):
+        board[int(mX / colWidth), int(mY / rowWidth)]= 1
+        return False
+    elif (mX >= 925 and mX <= 975):   
+        print("CLICK BUTTON")
+        return True
     
-    if mX <= col * colWidth:
-        x = mX / col
-        y =mY / row
-        board[int(x)][int(y)] = True
-        print(int(x), int(y))
+  
+   
     
+def updateGame():
+    for x in range(col):
+        for y in range(row):
+            if (x < 1 or y < 1):
+                print("SMaller")
     
-    
-def main():    
-    init_board()    
-        
-    run = True
-    while run:
+def main():  
+    while isRunning:
+        clock.tick(fps)        
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
             if event.type == pg.MOUSEBUTTONDOWN:
-                click()
-        render()
+                if (click()):
+                    isRunning = False
+        init_board()        
+        
+    print("END RUNNING")
+    # while run:
+    #     clock.tick(fps)
+    
+    #     for event in pg.event.get():
+    #         if event.type == pg.QUIT:
+    #             pg.quit()
+    #         if event.type == pg.MOUSEBUTTONDOWN:
+    #             click()
+    #     #updateGame()
+    #     render()
+
         
         
 main()
