@@ -1,11 +1,11 @@
-import pygame as py;
+import pygame as py
 
 import numpy as np
 
 # GLOBAL VARIABLES
 WIDTH, HEIGHT = 900,900
 blockSize = 30
-list_of_lists = [[0]*blockSize]*blockSize
+list_of_lists = [[0]*int(WIDTH / blockSize)]*int(HEIGHT / blockSize)
 board = np.array(list_of_lists)
 
 # Colors
@@ -13,7 +13,7 @@ black = (0,0,0)
 white = (255,255,255)
 dark = (100,100,100)
 
-fps = 3
+fps = 60
 
 py.init()
 
@@ -23,22 +23,18 @@ screen = py.display.set_mode((WIDTH, HEIGHT))
 
 py.display.set_caption('Game of life')
 
-def draw_grid():
-    for i in range(WIDTH / blockSize):
-       pg.draw.line(screen, white)
-    
+def draw_board():
+    for x in range(int(WIDTH / blockSize)):
+        for y in range(int(HEIGHT / blockSize)):
+            rect = py.Rect(x * blockSize, y * blockSize, blockSize, blockSize)
+            py.draw.rect(screen, white, rect, 1)       
 
-def draw_grid():
-    for i in range(row):
-        pg.draw.line(screen, white, (0, i * row), (row * row, i * col), 1)
-        pg.draw.line(screen, white, (i * col, 0), (i * row,col * col), 1)
+   
 
 def selectBlock():
     screen.fill(black)
-    draw_grid()    
-    draw_cells()
-    draw_button()
-    pg.display.update()
+    draw_board()
+    
 
 def click():
     mX, mY = py.mouse.get_pos()
@@ -52,8 +48,13 @@ def main():
             if event.type == py.QUIT:
                 py.quit()
             if event.type == py.MOUSEBUTTONDOWN:
-                click()            
-            if event.key == py.K_SPACE:
-                isRunning = False
+                click()  
+            if event.type == py.KEYDOWN:
+                if event.key == py.K_SPACE:
+                    isRunning = False;        
+        selectBlock()
+        py.display.flip()
     print("Out of loop")       
+
+main()
    
